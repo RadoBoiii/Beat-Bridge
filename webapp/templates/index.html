@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}BeatBridge - Transfer Music Playlists{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4 mb-5">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="BeatBridge Logo" class="img-fluid mb-3" style="max-height: 80px;">
+                        <h1 class="display-5 fw-bold">BeatBridge</h1>
+                        <p class="text-muted">Transfer playlists between music platforms - no subscriptions needed!</p>
+                    </div>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form action="{{ url_for('process') }}" method="post" id="playlistForm">
+                        <div class="mb-4">
+                            <label for="playlist_url" class="form-label fw-bold">Playlist Link</label>
+                            <input type="url" class="form-control form-control-lg" id="playlist_url" name="playlist_url" 
+                                   placeholder="https://open.spotify.com/playlist/..." required>
+                            <div class="form-text">Paste a link to any public playlist</div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="source_platform" class="form-label fw-bold">Source Platform</label>
+                                <select class="form-select form-select-lg" id="source_platform" name="source_platform" required>
+                                    <option value="" selected disabled>Select source</option>
+                                    <option value="spotify">Spotify</option>
+                                    <option value="apple_music">Apple Music</option>
+                                    <option value="youtube_music">YouTube Music</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="destination_platform" class="form-label fw-bold">Destination Platform</label>
+                                <select class="form-select form-select-lg" id="destination_platform" name="destination_platform" required>
+                                    <option value="" selected disabled>Select destination</option>
+                                    <option value="spotify">Spotify</option>
+                                    <option value="apple_music">Apple Music</option>
+                                    <option value="youtube_music">YouTube Music</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg py-3">Convert Playlist</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3">How It Works</h4>
+                    <ol class="list-group list-group-numbered mb-3">
+                        <li class="list-group-item border-0 ps-0">Paste the playlist link from any supported music platform</li>
+                        <li class="list-group-item border-0 ps-0">Select the source and destination platforms</li>
+                        <li class="list-group-item border-0 ps-0">Authorize access to your accounts (we never store your passwords)</li>
+                        <li class="list-group-item border-0 ps-0">We'll convert the playlist and create a new one on your destination platform</li>
+                    </ol>
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>Note: Due to differences in music catalogs between platforms, some songs might not be available in the destination platform.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Simple validation to prevent selecting the same platform for source and destination
+    document.getElementById('playlistForm').addEventListener('submit', function(e) {
+        const source = document.getElementById('source_platform').value;
+        const destination = document.getElementById('destination_platform').value;
+        
+        if (source === destination) {
+            e.preventDefault();
+            alert('Source and destination platforms cannot be the same');
+        }
+    });
+
+    // Update URL placeholder based on selected platform
+    document.getElementById('source_platform').addEventListener('change', function() {
+        const platform = this.value;
+        const urlInput = document.getElementById('playlist_url');
+        
+        if (platform === 'spotify') {
+            urlInput.placeholder = 'https://open.spotify.com/playlist/...';
+        } else if (platform === 'apple_music') {
+            urlInput.placeholder = 'https://music.apple.com/us/playlist/...';
+        } else if (platform === 'youtube_music') {
+            urlInput.placeholder = 'https://music.youtube.com/playlist?list=...';
+        }
+    });
+</script>
+{% endblock %}

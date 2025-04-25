@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .logo-text { font-family: Arial, sans-serif; font-weight: bold; }
+    .main-color { fill: #4361ee; }
+    .accent-color { fill: #E63946; }
+  </style>
+  
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="90" fill="white" stroke="#4361ee" stroke-width="4"/>
+  
+  <!-- Music Note -->
+  <path class="main-color" d="M80,50 L80,120 C80,133.3 68.3,145 55,145 C41.7,145 30,133.3 30,120 C30,106.7 41.7,95 55,95 C60,95 65,96.5 69,99 L69,50 L130,60 L130,115 C130,128.3 118.3,140 105,140 C91.7,140 80,128.3 80,115 C80,101.7 91.7,90 105,90 C110,90 115,91.5 119,94 L119,65 L80,55 Z"/>
+  
+  <!-- Bridge -->
+  <path class="accent-color" d="M45,80 L155,80 L155,85 L145,85 L145,95 L135,95 L135,85 L120,85 L120,100 L110,100 L110,85 L90,85 L90,100 L80,100 L80,85 L65,85 L65,95 L55,95 L55,85 L45,85 Z"/>
+  
+  <!-- B B Text -->
+  <text x="70" y="160" class="logo-text main-color" font-size="24">BB</text>
+</svg>

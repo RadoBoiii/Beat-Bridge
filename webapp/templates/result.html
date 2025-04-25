@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Conversion Result - BeatBridge{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4 mb-4">
+                <div class="card-body p-5">
+                    {% if success %}
+                        <div class="text-center mb-4">
+                            <div class="display-1 text-success mb-3">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h1 class="display-5 fw-bold">Success!</h1>
+                            <p class="lead text-muted mb-0">
+                                Your playlist has been transferred from {{ source_platform }} to {{ destination_platform }}.
+                            </p>
+                        </div>
+                        
+                        <div class="alert alert-success mb-4">
+                            {{ message }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="fw-bold mb-3">Your New Playlist</h4>
+                            <div class="d-grid gap-2">
+                                <a href="{{ playlist_url }}" target="_blank" class="btn btn-primary btn-lg py-3">
+                                    <i class="fas fa-external-link-alt me-2"></i> Open Playlist
+                                </a>
+                                <button class="btn btn-outline-secondary btn-lg py-3" onclick="copyToClipboard('{{ playlist_url }}')">
+                                    <i class="fas fa-copy me-2"></i> Copy Link
+                                </button>
+                            </div>
+                        </div>
+                        
+                        {% if failed_tracks and failed_tracks|length > 0 %}
+                            <div class="mb-3">
+                                <h5 class="fw-bold">
+                                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                    Some tracks couldn't be transferred ({{ failed_tracks|length }})
+                                </h5>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Track</th>
+                                                <th>Artist</th>
+                                                <th>Reason</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for track in failed_tracks %}
+                                                <tr>
+                                                    <td>{{ track.name }}</td>
+                                                    <td>{{ track.artist }}</td>
+                                                    <td>{{ track.reason }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center mb-4">
+                            <div class="display-1 text-danger mb-3">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                            <h1 class="display-5 fw-bold">Conversion Failed</h1>
+                            <p class="lead text-muted mb-0">
+                                We couldn't transfer your playlist from {{ source_platform }} to {{ destination_platform }}.
+                            </p>
+                        </div>
+                        
+                        <div class="alert alert-danger mb-4">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-grid mt-4 gap-2">
+                        <a href="{{ url_for('index') }}" class="btn btn-lg btn-outline-primary py-3">
+                            <i class="fas fa-redo me-2"></i> Convert Another Playlist
+                        </a>
+                        {% if not success %}
+                            <a href="{{ url_for('index') }}" class="btn btn-lg btn-outline-secondary py-3">
+                                <i class="fas fa-bug me-2"></i> Try Again
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3">Share BeatBridge</h4>
+                    <p class="mb-3">
+                        Enjoyed using BeatBridge? Share it with your friends!
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="https://twitter.com/intent/tweet?text=I%20just%20transferred%20my%20playlist%20with%20BeatBridge!%20Check%20it%20out%20at%20https://beatbridge.com" 
+                           target="_blank" class="btn btn-outline-primary">
+                            <i class="fab fa-twitter me-2"></i> Twitter
+                        </a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=https://beatbridge.com" 
+                           target="_blank" class="btn btn-outline-primary">
+                            <i class="fab fa-facebook-f me-2"></i> Facebook
+                        </a>
+                        <button class="btn btn-outline-primary" onclick="copyToClipboard('https://beatbridge.com')">
+                            <i class="fas fa-link me-2"></i> Copy Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text)
+            .then(() => {
+                // Create toast notification
+                const toastEl = document.createElement('div');
+                toastEl.className = 'position-fixed bottom-0 end-0 p-3';
+                toastEl.style.zIndex = '11';
+                
+                toastEl.innerHTML = `
+                    <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas fa-check-circle me-2"></i> Link copied to clipboard!
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(toastEl);
+                
+                const toast = new bootstrap.Toast(toastEl.querySelector('.toast'));
+                toast.show();
+                
+                // Remove toast element after it's hidden
+                toastEl.addEventListener('hidden.bs.toast', () => {
+                    document.body.removeChild(toastEl);
+                });
+            })
+            .catch(err => {
+                console.error('Error copying text: ', err);
+                alert('Failed to copy link. Please try again.');
+            });
+    }
+</script>
+{% endblock %}
